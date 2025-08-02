@@ -67,7 +67,9 @@ export function PledgeWall() {
         .subscribe()
 
       return () => {
-        supabase.removeChannel(channel)
+        if (supabase) {
+          supabase.removeChannel(channel)
+        }
       }
     }
   }, [tableExists])
@@ -213,6 +215,19 @@ export function PledgeWall() {
           </CardContent>
         </Card>
       )}
+
+      {/* Top Pledges Section */}
+      <div className="mt-12">
+        <h3 className="font-bold text-xl mb-2">Top Pledges</h3>
+        <ul>
+          {pledges.slice(0, 10).map((p, i) => (
+            <li key={i}>
+              <span className="font-semibold">{p.name}</span>: ₦{p.amount.toLocaleString()}{" "}
+              {p.message && <span>— {p.message}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

@@ -1,13 +1,11 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { isSupabaseConfigured } from "@/lib/supabase"
 
 interface PledgeFormProps {
   onPledgeSubmitted: (amount: number) => void
@@ -15,16 +13,20 @@ interface PledgeFormProps {
 
 export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
   const [name, setName] = useState("")
-  const [amount, setAmount] = useState("")
+  const [amount, setAmount] = useState(0)
+  const [customAmount, setCustomAmount] = useState("")
   const [message, setMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const presetAmounts = [20000, 50000, 100000, 200000]
 
-  const quickAmounts = [25000, 50000, 100000, 200000, 500000]
+  const addAmount = (amt: number) => setAmount((a) => a + amt)
+  const handleCustomAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value)
+    setAmount(Number(e.target.value) || 0)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !amount) return
-
     setIsSubmitting(true)
 
     try {
@@ -36,7 +38,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
         },
         body: JSON.stringify({
           name: name.trim(),
-          amount: Number.parseInt(amount),
+          amount: Number.parseInt(amount.toString()),
           message: message.trim() || null,
         }),
       })
@@ -48,11 +50,12 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
       }
 
       if (result.success) {
-        onPledgeSubmitted(Number.parseInt(amount))
+        onPledgeSubmitted(Number.parseInt(amount.toString()))
 
         // Reset form
         setName("")
-        setAmount("")
+        setAmount(0)
+        setCustomAmount("")
         setMessage("")
 
         // Show success message
@@ -62,40 +65,14 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
       }
     } catch (error) {
       console.error("Error submitting pledge:", error)
-      alert(`❌ Failed to submit pledge: ${error.message}. Please try again.`)
+      const errorMessage =
+        typeof error === "object" && error !== null && "message" in error
+          ? (error as { message: string }).message
+          : String(error)
+      alert(`❌ Failed to submit pledge: ${errorMessage}. Please try again.`)
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  if (!isSupabaseConfigured) {
-    return (
-      <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-xl backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-yellow-700">⚙️ Setup Required</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-yellow-600">
-            To enable real-time pledges and email notifications, please configure Supabase by clicking the "Add Supabase
-            integration" button above.
-          </p>
-          <div className="bg-yellow-100 p-4 rounded-lg">
-            <p className="text-sm text-yellow-700">
-              <strong>Demo Mode:</strong> You can still test the interface - pledges will show mock animations but won't
-              be saved or emailed.
-            </p>
-          </div>
-          <Button
-            onClick={() => {
-              onPledgeSubmitted(50000)
-            }}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white transform hover:scale-105 transition-all duration-300"
-          >
-            🎭 Try Demo Pledge
-          </Button>
-        </CardContent>
-      </Card>
-    )
   }
 
   return (
@@ -126,30 +103,30 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
             <Label htmlFor="amount" className="text-rose-700 font-semibold flex items-center gap-2">
               <span className="text-lg">💰</span> Pledge Amount (UGX)
             </Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter your generous amount"
-              className="border-rose-200 focus:border-rose-400 bg-white/80 backdrop-blur-sm h-12 text-lg"
-              required
-              min="1000"
-            />
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              {quickAmounts.map((quickAmount) => (
+            <div className="flex gap-2 mb-2">
+              {presetAmounts.map((amt) => (
                 <Button
-                  key={quickAmount}
+                  key={amt}
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setAmount(quickAmount.toString())}
+                  onClick={() => addAmount(amt)}
                   className="border-rose-300 text-rose-600 hover:bg-rose-100 hover:border-rose-400 transition-all duration-300 transform hover:scale-105 font-semibold"
                 >
-                  {quickAmount.toLocaleString()}
+                  +UGX{amt.toLocaleString()}
                 </Button>
               ))}
             </div>
+            <Input
+              id="amount"
+              type="number"
+              min={0}
+              placeholder="Or type amount"
+              value={customAmount}
+              onChange={handleCustomAmount}
+              className="border-rose-200 focus:border-rose-400 bg-white/80 backdrop-blur-sm h-12 text-lg"
+            />
+            <div className="mt-2 font-bold text-lg">Total: UGX{amount.toLocaleString()}</div>
           </div>
 
           <div className="space-y-2">
@@ -168,7 +145,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
 
           <Button
             type="submit"
-            disabled={isSubmitting || !name || !amount}
+            disabled={isSubmitting || !name || amount <= 0}
             className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-4 text-lg rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl disabled:transform-none"
           >
             {isSubmitting ? (

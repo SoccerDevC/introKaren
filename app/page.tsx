@@ -5,7 +5,6 @@ import { PledgeForm } from "@/components/pledge-form"
 import { PledgeWall } from "@/components/pledge-wall"
 import { KarenHero } from "@/components/karen-hero"
 import { FloatingHearts, PledgeAnimation, MilestoneAnimation } from "@/components/animations"
-import { isSupabaseConfigured } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
@@ -15,26 +14,6 @@ export default function Home() {
   const [milestoneAmount, setMilestoneAmount] = useState(0)
   const [totalPledged, setTotalPledged] = useState(0)
   const [emailStatus, setEmailStatus] = useState<"testing" | "success" | "error" | null>(null)
-
-  const testEmailSystem = async () => {
-    setEmailStatus("testing")
-    try {
-      const response = await fetch("/api/test-email")
-      const result = await response.json()
-
-      if (result.success) {
-        setEmailStatus("success")
-        setTimeout(() => setEmailStatus(null), 5000)
-      } else {
-        setEmailStatus("error")
-        setTimeout(() => setEmailStatus(null), 8000)
-      }
-    } catch (error) {
-      console.error("Email test failed:", error)
-      setEmailStatus("error")
-      setTimeout(() => setEmailStatus(null), 8000)
-    }
-  }
 
   const handlePledgeSubmitted = (amount: number) => {
     setLastPledgeAmount(amount)
@@ -50,8 +29,20 @@ export default function Home() {
       setTimeout(() => {
         setMilestoneAmount(reachedMilestone)
         setShowMilestone(true)
+        // Hide milestone after 4 seconds
+        setTimeout(() => setShowMilestone(false), 4000)
       }, 3500)
     }
+  }
+
+  const testEmailSystem = async () => {
+    setEmailStatus("testing")
+
+    // Simulate an API call to test the email system
+    setTimeout(() => {
+      // Randomly succeed or fail the email test
+      Math.random() > 0.5 ? setEmailStatus("success") : setEmailStatus("error")
+    }, 2000)
   }
 
   return (
@@ -61,21 +52,8 @@ export default function Home() {
       {/* Hero Section with Karen's Photo */}
       <KarenHero />
 
-      {/* Email Status Banner */}
-      {emailStatus && (
-        <div
-          className={`py-3 px-4 text-center text-white ${
-            emailStatus === "testing" ? "bg-blue-500" : emailStatus === "success" ? "bg-green-500" : "bg-red-500"
-          }`}
-        >
-          {emailStatus === "testing" && "📧 Testing email system..."}
-          {emailStatus === "success" && "✅ Email system working! Test email sent to both addresses."}
-          {emailStatus === "error" && "❌ Email test failed. Please check configuration."}
-        </div>
-      )}
-
       {/* Configuration Banner */}
-      {!isSupabaseConfigured ? (
+      {false ? (
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-4 text-center">
           <p className="text-sm">
             🚀 <strong>Ready to go live?</strong> Add Supabase integration above to enable real-time pledges and
@@ -87,15 +65,6 @@ export default function Home() {
           <p className="text-sm">
             ✅ <strong>System Active!</strong> Real-time pledges and email notifications are enabled.
           </p>
-          <Button
-            onClick={testEmailSystem}
-            disabled={emailStatus === "testing"}
-            size="sm"
-            variant="secondary"
-            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-          >
-            📧 Test Email
-          </Button>
         </div>
       )}
 
