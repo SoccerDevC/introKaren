@@ -60,30 +60,24 @@ export default function Home() {
             database storage!
           </p>
         </div>
-      ) : (
-        <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-4 px-4 text-center flex items-center justify-center gap-4">
-          <p className="text-sm">
-            ✅ <strong>System Active!</strong> Real-time pledges and email notifications are enabled.
-          </p>
-        </div>
-      )}
+      ) : null}
 
       {/* Main Content Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
+      <section className="py-10 px-2 sm:py-16 sm:px-4">
+        <div className="container mx-auto max-w-4xl">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-4">
               Make Your Pledge of Love
             </h2>
-            <p className="text-xl text-rose-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-rose-600 max-w-3xl mx-auto leading-relaxed">
               Every contribution is a blessing, every pledge is a prayer, and every supporter becomes part of Karen's
               beautiful story. Join the celebration! 🌸💖
             </p>
           </div>
 
           {/* Pledge Form and Wall */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
             <div className="order-2 lg:order-1">
               <PledgeForm onPledgeSubmitted={handlePledgeSubmitted} />
             </div>

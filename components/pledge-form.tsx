@@ -103,18 +103,16 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
             <Label htmlFor="amount" className="text-rose-700 font-semibold flex items-center gap-2">
               <span className="text-lg">💰</span> Pledge Amount (UGX)
             </Label>
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2">
               {presetAmounts.map((amt) => (
-                <Button
+                <button
                   key={amt}
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  className="flex-1 min-w-[45%] sm:min-w-[120px] bg-pink-100 px-3 py-2 rounded font-semibold text-pink-700 hover:bg-pink-200 transition"
                   onClick={() => addAmount(amt)}
-                  className="border-rose-300 text-rose-600 hover:bg-rose-100 hover:border-rose-400 transition-all duration-300 transform hover:scale-105 font-semibold"
                 >
-                  +UGX{amt.toLocaleString()}
-                </Button>
+                  +₦{amt.toLocaleString()}
+                </button>
               ))}
             </div>
             <Input
