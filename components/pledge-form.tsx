@@ -84,7 +84,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
         <p className="text-rose-600 font-medium">Help make Karen's day magical</p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" id="pledge-form">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-rose-700 font-semibold flex items-center gap-2">
               <span className="text-lg">👤</span> Your Name
@@ -161,6 +161,29 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
           </Button>
         </form>
       </CardContent>
+      <div className="px-4 pb-4">
+        <button
+          onClick={() => {
+            document.getElementById('pledge-form')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="bg-pink-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-pink-700 transition"
+        >
+          Pledge Now
+        </button>
+      </div>
     </Card>
+  )
+}
+
+export default function Page() {
+  const handlePledgeSubmitted = (amount: number) => {
+    console.log("Pledge submitted:", amount)
+    // Handle the pledge submitted event (e.g., show a thank you message, update UI, etc.)
+  }
+
+  return (
+    <div id="pledge-form">
+      <PledgeForm onPledgeSubmitted={handlePledgeSubmitted} />
+    </div>
   )
 }
