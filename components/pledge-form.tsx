@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { isSupabaseConfigured, uploadFile } from "@/lib/supabase"
-import { Camera, X, Upload } from "lucide-react"
+import { isSupabaseConfigured } from "@/lib/supabase"
 
 interface PledgeFormProps {
   onPledgeSubmitted: (amount: number) => void
@@ -19,46 +18,8 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
   const [amount, setAmount] = useState("")
   const [message, setMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const quickAmounts = [25000, 50000, 100000, 200000]
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file")
-        return
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB")
-        return
-      }
-
-      setSelectedFile(file)
-
-      // Create preview URL
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-    }
-  }
-
-  const removeFile = () => {
-    setSelectedFile(null)
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-      setPreviewUrl(null)
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
-  }
+  const quickAmounts = [25000, 50000, 100000, 200000, 500000]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,16 +28,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
     setIsSubmitting(true)
 
     try {
-      let photoUrl = null
-
-      // Upload photo if selected
-      if (selectedFile && isSupabaseConfigured) {
-        setUploadProgress(true)
-        photoUrl = await uploadFile(selectedFile)
-        setUploadProgress(false)
-      }
-
-      // Submit pledge via API route
+      // Submit pledge via API route - simplified payload
       const response = await fetch("/api/submit-pledge", {
         method: "POST",
         headers: {
@@ -86,15 +38,14 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
           name: name.trim(),
           amount: Number.parseInt(amount),
           message: message.trim() || null,
-          photoUrl,
         }),
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to submit pledge")
-      }
-
       const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit pledge")
+      }
 
       if (result.success) {
         onPledgeSubmitted(Number.parseInt(amount))
@@ -103,22 +54,23 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
         setName("")
         setAmount("")
         setMessage("")
-        removeFile()
+
+        // Show success message
+        alert("🎉 Pledge submitted successfully! Thank you for your love and support! 💖")
       } else {
         throw new Error(result.error || "Failed to submit pledge")
       }
     } catch (error) {
       console.error("Error submitting pledge:", error)
-      alert("Failed to submit pledge. Please try again.")
+      alert(`❌ Failed to submit pledge: ${error.message}. Please try again.`)
     } finally {
       setIsSubmitting(false)
-      setUploadProgress(false)
     }
   }
 
   if (!isSupabaseConfigured) {
     return (
-      <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-xl">
+      <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200 shadow-xl backdrop-blur-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-yellow-700">⚙️ Setup Required</CardTitle>
         </CardHeader>
@@ -137,7 +89,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
             onClick={() => {
               onPledgeSubmitted(50000)
             }}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white transform hover:scale-105 transition-all duration-300"
           >
             🎭 Try Demo Pledge
           </Button>
@@ -147,43 +99,44 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-rose-50 to-pink-50 border-rose-200 shadow-xl">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
+    <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-rose-50/90 to-pink-50/90 border-rose-200 shadow-2xl backdrop-blur-sm border-2">
+      <CardHeader className="text-center pb-4">
+        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
           💖 Pledge Your Love 💖
         </CardTitle>
-        <p className="text-rose-600">Help make Karen's day magical</p>
+        <p className="text-rose-600 font-medium">Help make Karen's day magical</p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="text-rose-700 font-medium">
-              Your Name
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-rose-700 font-semibold flex items-center gap-2">
+              <span className="text-lg">👤</span> Your Name
             </Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              className="border-rose-200 focus:border-rose-400"
+              placeholder="Enter your beautiful name"
+              className="border-rose-200 focus:border-rose-400 bg-white/80 backdrop-blur-sm h-12 text-lg"
               required
             />
           </div>
 
-          <div>
-            <Label htmlFor="amount" className="text-rose-700 font-medium">
-              Pledge Amount (UGX)
+          <div className="space-y-3">
+            <Label htmlFor="amount" className="text-rose-700 font-semibold flex items-center gap-2">
+              <span className="text-lg">💰</span> Pledge Amount (UGX)
             </Label>
             <Input
               id="amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              className="border-rose-200 focus:border-rose-400"
+              placeholder="Enter your generous amount"
+              className="border-rose-200 focus:border-rose-400 bg-white/80 backdrop-blur-sm h-12 text-lg"
               required
+              min="1000"
             />
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="grid grid-cols-2 gap-2 mt-3">
               {quickAmounts.map((quickAmount) => (
                 <Button
                   key={quickAmount}
@@ -191,7 +144,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setAmount(quickAmount.toString())}
-                  className="border-rose-300 text-rose-600 hover:bg-rose-100"
+                  className="border-rose-300 text-rose-600 hover:bg-rose-100 hover:border-rose-400 transition-all duration-300 transform hover:scale-105 font-semibold"
                 >
                   {quickAmount.toLocaleString()}
                 </Button>
@@ -199,73 +152,36 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="message" className="text-rose-700 font-medium">
-              Message (Optional)
+          <div className="space-y-2">
+            <Label htmlFor="message" className="text-rose-700 font-semibold flex items-center gap-2">
+              <span className="text-lg">💌</span> Message (Optional)
             </Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Share your wishes for Karen..."
-              className="border-rose-200 focus:border-rose-400 resize-none"
-              rows={3}
+              placeholder="Share your heartfelt wishes for Karen's special day..."
+              className="border-rose-200 focus:border-rose-400 resize-none bg-white/80 backdrop-blur-sm min-h-[100px]"
+              rows={4}
             />
-          </div>
-
-          {/* Photo Upload Section */}
-          <div>
-            <Label className="text-rose-700 font-medium flex items-center gap-2">
-              <Camera className="w-4 h-4" />
-              Add a Photo (Optional)
-            </Label>
-
-            {!previewUrl ? (
-              <div className="mt-2">
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full border-rose-300 text-rose-600 hover:bg-rose-100 flex items-center gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  Choose Photo
-                </Button>
-                <p className="text-xs text-gray-500 mt-1">Max 5MB, JPG/PNG only</p>
-              </div>
-            ) : (
-              <div className="mt-2 relative">
-                <img
-                  src={previewUrl || "/placeholder.svg"}
-                  alt="Preview"
-                  className="w-full h-32 object-cover rounded-lg border-2 border-rose-200"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={removeFile}
-                  className="absolute top-2 right-2 w-6 h-6 p-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
           </div>
 
           <Button
             type="submit"
             disabled={isSubmitting || !name || !amount}
-            className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-3 rounded-lg shadow-lg transform transition hover:scale-105"
+            className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-4 text-lg rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl disabled:transform-none"
           >
             {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {uploadProgress ? "Uploading photo..." : "Submitting..."}
+              <span className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Submitting your love...
               </span>
             ) : (
-              "💕 Submit Pledge 💕"
+              <span className="flex items-center gap-2">
+                <span className="text-xl">💕</span>
+                Submit Pledge of Love
+                <span className="text-xl">💕</span>
+              </span>
             )}
           </Button>
         </form>

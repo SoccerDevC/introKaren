@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { PledgeForm } from "@/components/pledge-form"
 import { PledgeWall } from "@/components/pledge-wall"
+import { KarenHero } from "@/components/karen-hero"
 import { FloatingHearts, PledgeAnimation, MilestoneAnimation } from "@/components/animations"
 import { isSupabaseConfigured } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
@@ -57,16 +58,8 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-white">
       <FloatingHearts />
 
-      {/* Header */}
-      <header className="text-center py-8 px-4">
-        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-4">
-          💖 Karen's Introduction Ceremony 💖
-        </h1>
-        <p className="text-xl text-rose-600 max-w-2xl mx-auto">
-          Join us in celebrating love and making this special day unforgettable. Every pledge adds a flower to our
-          garden of love! 🌸
-        </p>
-      </header>
+      {/* Hero Section with Karen's Photo */}
+      <KarenHero />
 
       {/* Email Status Banner */}
       {emailStatus && (
@@ -83,14 +76,14 @@ export default function Home() {
 
       {/* Configuration Banner */}
       {!isSupabaseConfigured ? (
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 text-center">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-4 text-center">
           <p className="text-sm">
             🚀 <strong>Ready to go live?</strong> Add Supabase integration above to enable real-time pledges and
             database storage!
           </p>
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-3 px-4 text-center flex items-center justify-center gap-4">
+        <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-4 px-4 text-center flex items-center justify-center gap-4">
           <p className="text-sm">
             ✅ <strong>System Active!</strong> Real-time pledges and email notifications are enabled.
           </p>
@@ -106,17 +99,31 @@ export default function Home() {
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 pb-12">
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
-          <div className="order-2 lg:order-1">
-            <PledgeForm onPledgeSubmitted={handlePledgeSubmitted} />
+      {/* Main Content Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-4">
+              Make Your Pledge of Love
+            </h2>
+            <p className="text-xl text-rose-600 max-w-3xl mx-auto leading-relaxed">
+              Every contribution is a blessing, every pledge is a prayer, and every supporter becomes part of Karen's
+              beautiful story. Join the celebration! 🌸💖
+            </p>
           </div>
-          <div className="order-1 lg:order-2">
-            <PledgeWall />
+
+          {/* Pledge Form and Wall */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="order-2 lg:order-1">
+              <PledgeForm onPledgeSubmitted={handlePledgeSubmitted} />
+            </div>
+            <div className="order-1 lg:order-2">
+              <PledgeWall />
+            </div>
           </div>
         </div>
-      </main>
+      </section>
 
       {/* Animations */}
       {showPledgeAnimation && (
@@ -124,6 +131,26 @@ export default function Home() {
       )}
 
       {showMilestone && <MilestoneAnimation milestone={milestoneAmount} />}
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-r from-rose-100 to-pink-100 py-12 mt-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-rose-700">With Love & Blessings</h3>
+            <p className="text-rose-600 max-w-2xl mx-auto">
+              Thank you for being part of Karen's special journey. Your love and support make this celebration truly
+              magical! ✨
+            </p>
+            <div className="flex justify-center items-center gap-4 text-2xl">
+              <span>🌹</span>
+              <span>💖</span>
+              <span>✨</span>
+              <span>🌸</span>
+              <span>💕</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

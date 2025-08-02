@@ -16,7 +16,7 @@ export type Pledge = {
   created_at: string
 }
 
-// Mock data for when Supabase isn't configured
+// Enhanced mock data for when Supabase isn't configured or table doesn't exist
 export const mockPledges: Pledge[] = [
   {
     id: "1",
@@ -35,11 +35,39 @@ export const mockPledges: Pledge[] = [
   {
     id: "3",
     name: "Grace & David",
-    amount: 50000,
+    amount: 75000,
     message: "Congratulations on this special day! ✨",
     created_at: new Date(Date.now() - 7200000).toISOString(),
   },
+  {
+    id: "4",
+    name: "Auntie Rose",
+    amount: 200000,
+    message: "Karen, you are a blessing to our family! 👑",
+    created_at: new Date(Date.now() - 10800000).toISOString(),
+  },
+  {
+    id: "5",
+    name: "Best Friends Forever",
+    amount: 150000,
+    message: "We love you so much Karen! Can't wait to celebrate! 💖",
+    created_at: new Date(Date.now() - 14400000).toISOString(),
+  },
 ]
+
+// Check if the pledges table exists
+export async function checkTableExists(): Promise<boolean> {
+  if (!supabase) return false
+
+  try {
+    const { error } = await supabase.from("pledges").select("id").limit(1)
+
+    return !error
+  } catch (error) {
+    console.log("Table check failed:", error)
+    return false
+  }
+}
 
 // Upload file to Supabase Storage
 export async function uploadFile(file: File, bucket = "pledge-photos"): Promise<string | null> {

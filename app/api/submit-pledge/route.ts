@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { supabase, isSupabaseConfigured, checkTableExists } from "@/lib/supabase"
 import { sendPledgeNotification } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, amount, message, photoUrl } = await request.json()
+    const { name, amount, message } = await request.json()
 
     if (!name || !amount) {
       return NextResponse.json({ error: "Name and amount are required" }, { status: 400 })
@@ -13,27 +13,40 @@ export async function POST(request: NextRequest) {
     let pledgeId = null
     const timestamp = new Date().toISOString()
 
-    // Save to database if Supabase is configured
+    // Save to database if Supabase is configured and table exists
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from("pledges")
-        .insert([
-          {
-            name: name.trim(),
-            amount: Number.parseInt(amount),
-            message: message?.trim() || null,
-            photo_url: photoUrl || null,
-          },
-        ])
-        .select()
-        .single()
+      const tableExists = await checkTableExists()
 
-      if (error) {
-        console.error("Database error:", error)
-        return NextResponse.json({ error: "Failed to save pledge" }, { status: 500 })
+      if (tableExists) {
+        try {
+          const { data, error } = await supabase
+            .from("pledges")
+            .insert([
+              {
+                name: name.trim(),
+                amount: Number.parseInt(amount),
+                message: message?.trim() || null,
+                photo_url: null,
+              },
+            ])
+            .select()
+            .single()
+
+          if (error) {
+            console.error("Database error:", error)
+            // Don't fail the request, just log the error
+            console.log("Continuing without database save...")
+          } else {
+            pledgeId = data.id
+            console.log("✅ Pledge saved to database with ID:", pledgeId)
+          }
+        } catch (dbError) {
+          console.error("Database operation failed:", dbError)
+          console.log("Continuing without database save...")
+        }
+      } else {
+        console.log("📋 Table doesn't exist yet, skipping database save")
       }
-
-      pledgeId = data.id
     }
 
     // Send email notification (this is the main feature)
@@ -44,7 +57,7 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         amount: Number.parseInt(amount),
         message: message?.trim(),
-        photoUrl,
+        photoUrl: null,
         timestamp,
       })
 
@@ -52,11 +65,9 @@ export async function POST(request: NextRequest) {
         console.log("✅ Email sent successfully with ID:", emailResult.messageId)
       } else {
         console.error("❌ Email sending failed:", emailResult.error)
-        // Still continue with the response, but log the error
       }
     } catch (emailError) {
       console.error("❌ Email sending exception:", emailError)
-      // Don't fail the entire request if email fails
     }
 
     return NextResponse.json({
@@ -64,6 +75,7 @@ export async function POST(request: NextRequest) {
       pledgeId,
       message: "Pledge submitted successfully! Email notifications sent.",
       timestamp,
+      savedToDatabase: !!pledgeId,
     })
   } catch (error) {
     console.error("❌ API error:", error)
