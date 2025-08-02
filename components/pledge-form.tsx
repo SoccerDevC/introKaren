@@ -111,7 +111,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
                   className="flex-1 min-w-[45%] sm:min-w-[120px] bg-pink-100 px-3 py-2 rounded font-semibold text-pink-700 hover:bg-pink-200 transition"
                   onClick={() => addAmount(amt)}
                 >
-                  +₦{amt.toLocaleString()}
+                  +UGX{amt.toLocaleString()}
                 </button>
               ))}
             </div>
