@@ -53,10 +53,13 @@ export default function Home() {
       <KarenHero />
 
       {/* Centered Pledge Now Button below the hero image */}
-      <div className="flex justify-center mt-6 mb-2">
+      <div className="flex flex-col items-center mt-6 mb-2">
         <Button size="lg" className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-lg transition">
           Pledge Now
         </Button>
+        <span className="mt-2 text-sm text-rose-700" style={{ fontSize: "0.95em" }}>
+          Karen’s introduction ceremony
+        </span>
       </div>
       
       {/* Configuration Banner */}
