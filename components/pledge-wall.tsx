@@ -222,7 +222,7 @@ export function PledgeWall() {
         <ul>
           {pledges.slice(0, 10).map((p, i) => (
             <li key={i}>
-              <span className="font-semibold">{p.name}</span>: ₦{p.amount.toLocaleString()}{" "}
+              <span className="font-semibold">{p.name}</span>: Ush {p.amount.toLocaleString()}{" "}
               {p.message && <span>— {p.message}</span>}
             </li>
           ))}
