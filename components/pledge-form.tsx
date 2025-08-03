@@ -161,16 +161,7 @@ export function PledgeForm({ onPledgeSubmitted }: PledgeFormProps) {
           </Button>
         </form>
       </CardContent>
-      <div className="px-4 pb-4">
-        <button
-          onClick={() => {
-            document.getElementById('pledge-form')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="bg-pink-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-pink-700 transition"
-        >
-          Pledge Now
-        </button>
-      </div>
+    
     </Card>
   )
 }
