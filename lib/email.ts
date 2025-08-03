@@ -209,7 +209,7 @@ export async function sendPledgeNotification(pledgeData: PledgeEmailData) {
 
   const mailOptions = {
     from: '"Karen\'s Ceremony 💖" <cddavid2001@gmail.com>',
-    to: ["cddavid2001@gmail.com", "cnrddavid112@gmail.com"],
+    to: ["abigabakarenpearl@gmail.com", "hssali2012@gmail.com"],
     subject: `🌸 New Pledge: UGX ${amount.toLocaleString()} from ${name} - Karen's Ceremony`,
     html: htmlContent,
     // Also include plain text version for better compatibility
@@ -233,7 +233,7 @@ Making Karen's day more beautiful, one pledge at a time! 💖
     return { success: true, messageId: info.messageId }
   } catch (error) {
     console.error("❌ Error sending email:", error)
-    return { success: false, error: error.message }
+    return { success: false, error: typeof error === "object" && error !== null && "message" in error ? (error as any).message : String(error) }
   }
 }
 
@@ -245,6 +245,6 @@ export async function testEmailConfiguration() {
     return { success: true }
   } catch (error) {
     console.error("❌ Email configuration error:", error)
-    return { success: false, error: error.message }
+    return { success: false, error: typeof error === "object" && error !== null && "message" in error ? (error as any).message : String(error) }
   }
 }
