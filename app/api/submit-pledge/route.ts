@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
                 name: name.trim(),
                 amount: amt,
                 message: message?.trim() || null,
-                photo_url: null,
               },
             ])
             .select()
