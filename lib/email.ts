@@ -209,7 +209,8 @@ export async function sendPledgeNotification(pledgeData: PledgeEmailData) {
 
   const mailOptions = {
     from: '"Karen\'s Ceremony 💖" <cddavid2001@gmail.com>',
-    to: ["abigabakarenpearl@gmail.com", "hssali2012@gmail.com"],
+    to: [""],
+    // to: ["abigabakarenpearl@gmail.com", "hssali2012@gmail.com"],
     subject: `🌸 New Pledge: UGX ${amount.toLocaleString()} from ${name} - Karen's Ceremony`,
     html: htmlContent,
     // Also include plain text version for better compatibility
