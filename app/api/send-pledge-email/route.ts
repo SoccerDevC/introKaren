@@ -20,8 +20,7 @@ export async function POST(req: NextRequest) {
 
   const mailOptions = {
     from: '"Pledge System" <cddavid2001@gmail.com>',
-    to: "",
-    // to: "abigabakarenpearl@gmail.com, hssali2012@gmail.com",
+    to: "abigabakarenpearl@gmail.com, hssali2012@gmail.com",
     subject: "New Pledge Received",
     text: `A new pledge has been made!\n\nName: ${name}\nAmount: ₦${amount}\nMessage: ${message || "(none)"}`,
     html: `<h2>New Pledge Received!</h2><p><strong>Name:</strong> ${name}</p><p><strong>Amount:</strong> ₦${amount}</p><p><strong>Message:</strong> ${message || "(none)"}</p>`,
