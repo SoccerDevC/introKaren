@@ -52,17 +52,33 @@ export default function Home() {
       {/* Hero Section with Karen's Photo */}
       <KarenHero />
 
+      {/* Save the Date Banner */}
+      <div className="flex justify-center mt-6">
+        <div className="bg-white/90 border-2 border-rose-200 rounded-2xl shadow-lg px-8 py-6 text-center max-w-md">
+          <h2 className="text-2xl font-bold text-rose-700 mb-2">Save the Date!</h2>
+          <div className="text-lg text-rose-600 mb-1">
+            <strong>Date:</strong> 29th Nov 2025
+          </div>
+          <div className="text-lg text-rose-600 mb-1">
+            <strong>Venue:</strong> Seguku
+          </div>
+          <div className="text-lg text-rose-600">
+            <strong>RSVP:</strong> 0772513869 - Ms. Harriet Ssali
+          </div>
+        </div>
+      </div>
+
       {/* Centered Pledge Now Button below the hero image */}
       <div className="flex justify-center mt-6 mb-2">
-<Button
-  size="lg"
-  className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-lg transition"
-  onClick={() => {
-    document.getElementById('pledge-form')?.scrollIntoView({ behavior: 'smooth' });
-  }}
->
-  Pledge Now
-</Button>
+        <Button
+          size="lg"
+          className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-lg transition"
+          onClick={() => {
+            document.getElementById('pledge-form')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          Pledge Now
+        </Button>
       </div>
       
       {/* Configuration Banner */}
