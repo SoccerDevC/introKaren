@@ -52,6 +52,13 @@ export default function Home() {
       {/* Hero Section with Karen's Photo */}
       <KarenHero />
 
+      {/* Centered Pledge Now Button below the hero image */}
+      <div className="flex justify-center mt-6 mb-2">
+        <Button size="lg" className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-lg transition">
+          Pledge Now
+        </Button>
+      </div>
+      
       {/* Configuration Banner */}
       {false ? (
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-4 text-center">
