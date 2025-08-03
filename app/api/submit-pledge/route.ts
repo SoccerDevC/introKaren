@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Name and amount are required" }, { status: 400 })
     }
 
+    const amt = typeof amount === "string" ? Number.parseInt(amount) : amount
     let pledgeId = null
     const timestamp = new Date().toISOString()
 
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
             .insert([
               {
                 name: name.trim(),
-                amount: Number.parseInt(amount),
+                amount: amt,
                 message: message?.trim() || null,
                 photo_url: null,
               },
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         amount: Number.parseInt(amount),
         message: message?.trim(),
-        photoUrl: null,
+        photoUrl: undefined,
         timestamp,
       })
 
