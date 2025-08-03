@@ -216,7 +216,7 @@ export function PledgeWall() {
         </Card>
       )}
 
-      {/* Top Pledges Section */}
+      {/* Top Pledges Section
       <div className="mt-12">
         <h3 className="font-bold text-xl mb-2">Top Pledges</h3>
         <ul>
@@ -227,7 +227,7 @@ export function PledgeWall() {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
     </div>
   )
 }
