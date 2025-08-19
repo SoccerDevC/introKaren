@@ -13,13 +13,13 @@ export async function POST(req: NextRequest) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "cddavid2001@gmail.com",
-      pass: "wdjw thhl jaog hzge",
+      user: "alltechissues@gmail.com",
+      pass: "nuyq zssi mglh auzu",
     },
   });
 
   const mailOptions = {
-    from: '"Pledge System" <cddavid2001@gmail.com>',
+    from: '"Pledge System" <alltechissues@gmail.com>',
     to: "abigabakarenpearl@gmail.com, hssali2012@gmail.com, Sarahsewags@gmail.com",
     subject: "New Pledge Received",
     text: `A new pledge has been made!\n\nName: ${name}\nAmount: ₦${amount}\nMessage: ${message || "(none)"}`,
