@@ -8,6 +8,8 @@ const JSON_PATH = path.join(process.cwd(), "pledges.json");
 
 export async function POST(req: NextRequest) {
   const { name, amount, message } = await req.json();
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("SMTP_PASS length:", process.env.SMTP_PASS?.length);
 
   // Send email
   const transporter = nodemailer.createTransport({
