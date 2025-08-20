@@ -11,12 +11,15 @@ export async function POST(req: NextRequest) {
 
   // Send email
   const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "alltechissues@gmail.com",
-      pass: "nuyq zssi mglh auzu",
-    },
-  });
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for port 465
+  auth: {
+    user: process.env.SMTP_USER, // full Gmail address
+    pass: process.env.SMTP_PASS, // 16-char app password, no spaces
+  },
+});
+
 
   const mailOptions = {
     from: '"Pledge System" <alltechissues@gmail.com>',
